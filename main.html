@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>앱 메인화면</title>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white h-screen flex flex-col justify-between items-center p-4">
+
+  <!-- 상단: 앱 이름 / 설정 -->
+  <div class="w-full flex justify-between items-center text-lg font-semibold">
+    <span>앱 이름</span>
+    <span>설정</span>
+  </div>
+
+  <!-- 중앙: 스와이프 화면 -->
+  <div class="flex-1 w-full flex items-center justify-center">
+    <div class="swiper w-full h-full">
+      <div class="swiper-wrapper">
+        <!-- 빈 화면 1 -->
+        <div class="swiper-slide flex items-center justify-center bg-gray-100 rounded-xl">
+          <span class="text-gray-400">화면 1</span>
+        </div>
+        <!-- 빈 화면 2 -->
+        <div class="swiper-slide flex items-center justify-center bg-gray-100 rounded-xl">
+          <span class="text-gray-400">화면 2</span>
+        </div>
+        <!-- 빈 화면 3 -->
+        <div class="swiper-slide flex items-center justify-center bg-gray-100 rounded-xl">
+          <span class="text-gray-400">화면 3</span>
+        </div>
+      </div>
+      <!-- 하단 점 -->
+      <div class="swiper-pagination mt-4"></div>
+    </div>
+  </div>
+
+  <!-- 하단 버튼 -->
+  <div class="w-full flex flex-col gap-4 mt-6">
+    <button class="bg-blue-600 text-white text-xl py-4 rounded-2xl w-full font-bold">
+      석식 인증
+    </button>
+    <button class="bg-green-600 text-white text-xl py-4 rounded-2xl w-full font-bold">
+      양도받기
+    </button>
+  </div>
+
+  <!-- 스와이퍼 초기화 -->
+  <script>
+    new Swiper('.swiper', {
+      loop: false,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+    });
+  </script>
+
+</body>
+</html>
