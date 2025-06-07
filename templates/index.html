@@ -2,122 +2,149 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>회원가입</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>메인화면</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+      background-color: #f9fafb;
+    }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .top-bar button {
+      padding: 0.4rem 0.8rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      background-color: #4b5563;
+      color: white;
+      cursor: pointer;
+    }
+    .main-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0 1rem;
+      margin: 1rem 0;
+    }
+    .main-buttons button {
+      flex: 1;
+      padding: 1rem 0;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      background-color: #3b82f6;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .main-buttons button:hover {
+      background-color: #2563eb;
+    }
+    .slider {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      height: 300px;
+    }
+    .slides {
+      display: flex;
+      width: 300%;
+      height: 100%;
+      transition: transform 0.4s ease-in-out;
+    }
+    .slide {
+      flex: 1 0 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      font-size: 1.5rem;
+      color: #6b7280;
+      background-color: #e5e7eb;
     }
-    form {
-      background-color: white;
-      padding: 20px 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 350px;
-    }
-    h2 {
-      text-align: center;
-    }
-    .triple-select {
+    .pagination {
       display: flex;
-      justify-content: space-between;
-      gap: 10px;
+      justify-content: center;
+      margin: 1rem 0;
+      gap: 0.5rem;
     }
-    .triple-select > div {
-      flex: 1;
-    }
-    .triple-select select {
-      width: 100%;
-      padding: 5px;
-      box-sizing: border-box;
-    }
-    label, input {
-      display: block;
-      width: 100%;
-      margin-top: 10px;
-    }
-    input[type="text"],
-    input[type="password"] {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    input[type="submit"] {
-      margin-top: 20px;
-      width: 100%;
-      padding: 10px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #d1d5db;
       cursor: pointer;
     }
-    input[type="submit"]:hover {
-      background-color: #45a049;
+    .dot.active {
+      background-color: #3b82f6;
     }
   </style>
 </head>
 <body>
 
-  <form action="/signup" method="post">
-    <h2>회원가입</h2>
+  <div class="top-bar">
+    <span>앱 이름</span>
+    <button onclick="alert('설정화면으로 이동')">설정</button>
+  </div>
 
-    <div class="triple-select">
-      <div>
-        <label for="grade">학년</label>
-        <select id="grade" name="grade" required>
-          <option value="">선택</option>
-          <option value="1">1학년</option>
-          <option value="2">2학년</option>
-          <option value="3">3학년</option>
-        </select>
-      </div>
+  <div class="main-buttons">
+    <button>석식 인증</button>
+    <button>양도 받기</button>
+  </div>
 
-      <div>
-        <label for="class">반</label>
-        <select id="class" name="class" required>
-          <option value="">선택</option>
-          <option value="1">1반</option>
-          <option value="2">2반</option>
-          <option value="3">3반</option>
-          <option value="4">4반</option>
-          <option value="5">5반</option>
-          <option value="6">6반</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="number">번호</label>
-        <select id="number" name="number" required>
-          <option value="">선택</option>
-        </select>
-      </div>
+  <div class="slider">
+    <div class="slides" id="slides">
+      <div class="slide">화면 1</div>
+      <div class="slide">화면 2</div>
+      <div class="slide">화면 3</div>
     </div>
+  </div>
 
-    <label for="phone">전화번호</label>
-    <input type="text" id="phone" name="phone" placeholder="- 없이 숫자만 입력하세요" required>
-
-    <label for="userid">아이디</label>
-    <input type="text" id="userid" name="userid" required>
-
-    <label for="password">비밀번호</label>
-    <input type="password" id="password" name="password" required>
-
-    <input type="submit" value="가입하기" />
-  </form>
+  <div class="pagination">
+    <div class="dot active" onclick="goToSlide(0)"></div>
+    <div class="dot" onclick="goToSlide(1)"></div>
+    <div class="dot" onclick="goToSlide(2)"></div>
+  </div>
 
   <script>
-    const numberSelect = document.getElementById("number");
-    for (let i = 1; i <= 24; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = `${i}번`;
-      numberSelect.appendChild(option);
+    let currentIndex = 0;
+    const slides = document.getElementById('slides');
+    const dots = document.querySelectorAll('.dot');
+
+    function updateSlide() {
+      slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentIndex);
+      });
     }
+
+    function goToSlide(index) {
+      if (index < 0 || index >= dots.length) return;
+      currentIndex = index;
+      updateSlide();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') goToSlide(currentIndex + 1);
+      else if (e.key === 'ArrowLeft') goToSlide(currentIndex - 1);
+    });
   </script>
 
 </body>
