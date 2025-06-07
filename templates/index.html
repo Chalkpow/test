@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>회원가입</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    form {
+      background-color: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+    h2 {
+      text-align: center;
+    }
+    .triple-select {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .triple-select > div {
+      flex: 1;
+    }
+    .triple-select select {
+      width: 100%;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+    label, input {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+    }
+    input[type="text"],
+    input[type="password"] {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    input[type="submit"] {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <form action="/signup" method="post">
+    <h2>회원가입</h2>
+
+    <div class="triple-select">
+      <div>
+        <label for="grade">학년</label>
+        <select id="grade" name="grade" required>
+          <option value="">선택</option>
+          <option value="1">1학년</option>
+          <option value="2">2학년</option>
+          <option value="3">3학년</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="class">반</label>
+        <select id="class" name="class" required>
+          <option value="">선택</option>
+          <option value="1">1반</option>
+          <option value="2">2반</option>
+          <option value="3">3반</option>
+          <option value="4">4반</option>
+          <option value="5">5반</option>
+          <option value="6">6반</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="number">번호</label>
+        <select id="number" name="number" required>
+          <option value="">선택</option>
+        </select>
+      </div>
+    </div>
+
+    <label for="phone">전화번호</label>
+    <input type="text" id="phone" name="phone" placeholder="- 없이 숫자만 입력하세요" required>
+
+    <label for="userid">아이디</label>
+    <input type="text" id="userid" name="userid" required>
+
+    <label for="password">비밀번호</label>
+    <input type="password" id="password" name="password" required>
+
+    <input type="submit" value="가입하기" />
+  </form>
+
+  <script>
+    const numberSelect = document.getElementById("number");
+    for (let i = 1; i <= 24; i++) {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = `${i}번`;
+      numberSelect.appendChild(option);
+    }
+  </script>
+
+</body>
+</html>
