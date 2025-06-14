@@ -110,6 +110,9 @@
       </div>
     </div>
 
+    <label for="name">이름</label>
+    <input type="text" id="name" name="name" required>
+
     <label for="phone">전화번호</label>
     <input type="text" id="phone" name="phone" placeholder="- 없이 숫자만 입력" required>
 
@@ -119,10 +122,16 @@
     <label for="password">비밀번호</label>
     <input type="password" id="password" name="password" required>
 
+    <label for="passwordConfirm">비밀번호 확인 
+      <span id="pwMatchMessage" style="font-weight: normal; font-size: 0.9rem; margin-left: 8px;"></span>
+    </label>
+    <input type="password" id="passwordConfirm" name="passwordConfirm" required>
+
     <input type="submit" value="가입하기" />
   </form>
 
   <script>
+    // 번호 목록 자동 추가
     const numberSelect = document.getElementById("number");
     for (let i = 1; i <= 24; i++) {
       const option = document.createElement("option");
@@ -130,6 +139,37 @@
       option.textContent = `${i}번`;
       numberSelect.appendChild(option);
     }
+
+    // 비밀번호 확인 메시지 표시
+    const password = document.getElementById("password");
+    const passwordConfirm = document.getElementById("passwordConfirm");
+    const pwMessage = document.getElementById("pwMatchMessage");
+
+    function checkPasswordMatch() {
+      if (passwordConfirm.value === "") {
+        pwMessage.textContent = "";
+        return;
+      }
+      if (password.value === passwordConfirm.value) {
+        pwMessage.textContent = "비밀번호가 일치합니다.";
+        pwMessage.style.color = "green";
+      } else {
+        pwMessage.textContent = "비밀번호가 일치하지 않습니다.";
+        pwMessage.style.color = "red";
+      }
+    }
+
+    password.addEventListener("input", checkPasswordMatch);
+    passwordConfirm.addEventListener("input", checkPasswordMatch);
+
+    // 폼 제출 시 비밀번호 불일치 방지
+    document.querySelector("form").addEventListener("submit", function (e) {
+      if (password.value !== passwordConfirm.value) {
+        e.preventDefault();
+        pwMessage.textContent = "비밀번호가 일치하지 않습니다.";
+        pwMessage.style.color = "red";
+      }
+    });
   </script>
 
 </body>
