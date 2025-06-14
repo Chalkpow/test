@@ -1,15 +1,10 @@
-<<<<<<< HEAD
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-=======
-from flask import Flask, render_template, request, redirect, url_for, session
->>>>>>> 2f47eac1ede4803142e7fd65ff909fd3cd811fbf
 import qrcode
 import datetime
 from io import BytesIO
 import base64
 
 app = Flask(__name__)
-<<<<<<< HEAD
 app.secret_key = 'your_secret_key'  # 세션 키
 
 # 메모리 저장용 (예시용, 실제 서비스는 DB 사용 권장)
@@ -76,41 +71,6 @@ def generate_qr():
     if not user:
         flash('로그인한 뒤 이용할 수 있습니다!')
         return redirect(url_for('login'))
-
-    today = datetime.datetime.now().strftime("%Y%m%d")
-    qr_data = today + user['grade'] + user['class'] + user['number']
-
-    img = qrcode.make(qr_data)
-    buf = BytesIO()
-    img.save(buf)
-    img_b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
-
-    return render_template('qr.html', qr_data=qr_data, img_data=img_b64)
-=======
-app.secret_key = 'your_secret_key'  # 세션 사용을 위한 키
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        # 사용자 정보 세션에 저장
-        session['user'] = {
-            'grade': f"{int(request.form['grade']):02d}",
-            'class': f"{int(request.form['class']):02d}",
-            'number': f"{int(request.form['number']):02d}"
-        }
-        return redirect(url_for('main'))
-    return render_template('index.html')
-
-@app.route('/main')
-def main():
-    return render_template('main.html')
->>>>>>> 2f47eac1ede4803142e7fd65ff909fd3cd811fbf
-
-@app.route('/generate_qr')
-def generate_qr():
-    user = session.get('user')
-    if not user:
-        return redirect(url_for('index'))
 
     today = datetime.datetime.now().strftime("%Y%m%d")
     qr_data = today + user['grade'] + user['class'] + user['number']
