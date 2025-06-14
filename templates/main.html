@@ -2,71 +2,77 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>앱 메인화면</title>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-white h-screen flex flex-col justify-between items-center p-4">
 
-  <!-- 상단: 앱 이름 / 설정 버튼 -->
+  <!-- 상단 -->
   <div class="w-full flex justify-between items-center text-lg font-semibold mb-4">
     <span>괴산고 석식 도우미</span>
-    <button class="text-blue-600">설정</button>
-  </div>  
-  
+
+    <div class="flex items-center space-x-4">
+      {% if user %}
+        <span>{{ user.grade }}학년 {{ user.class }}반 {{ user.number }}번 {{ user.name }}</span>
+        <a href="{{ url_for('logout') }}" class="text-red-600 hover:underline">로그아웃</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="text-blue-600 hover:underline">로그인</a>
+        <a href="{{ url_for('register') }}" class="text-blue-600 hover:underline">회원가입</a>
+      {% endif %}
+
+      <button class="text-blue-600 ml-4">설정</button>
+    </div>
+  </div>
+
   <!-- 중앙: 스와이프 화면 -->
   <div class="flex-1 w-full flex items-center justify-center">
     <div class="swiper w-full h-full" id="mainSwiper">
       <div class="swiper-wrapper">
-        <!-- 빈 화면 1 -->
         <div class="swiper-slide flex items-center justify-center bg-gray-100 rounded-xl">
           <span class="text-gray-400">화면 1</span>
         </div>
-        <!-- 빈 화면 2 -->
         <div class="swiper-slide flex items-center justify-center bg-gray-100 rounded-xl">
           <span class="text-gray-400">화면 2</span>
         </div>
-        <!-- 빈 화면 3 -->
         <div class="swiper-slide flex items-center justify-center bg-gray-100 rounded-xl">
           <span class="text-gray-400">화면 3</span>
         </div>
       </div>
-      <!-- 하단 점 -->
       <div class="swiper-pagination mt-4"></div>
     </div>
   </div>
 
-  <!-- 하단 버튼 (가로 배치) -->
-  <div class="w-full flex flex-row gap-4 mt-6">
-    <button class="bg-blue-600 text-white text-xl py-4 rounded-2xl w-1/2 font-bold">
+  <!-- 하단 버튼 -->
+  <a href="/generate_qr" class="w-full mt-6">
+    <button class="bg-blue-600 text-white text-xl py-4 rounded-2xl w-full font-bold">
       석식 인증
     </button>
-    <button class="bg-green-600 text-white text-xl py-4 rounded-2xl w-1/2 font-bold">
-      석식 양도
-    </button>
-  </div>
+  </a>
 
   <!-- 스와이퍼 + 키보드 이벤트 초기화 -->
   <script>
     const swiper = new Swiper('#mainSwiper', {
       loop: false,
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-      },
+      pagination: { el: '.swiper-pagination', clickable: true },
     });
 
-    // ⌨️ 키보드 화살표로 슬라이드 넘기기
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') {
-        swiper.slideNext();
-      } else if (e.key === 'ArrowLeft') {
-        swiper.slidePrev();
-      }
+      if (e.key === 'ArrowRight') swiper.slideNext();
+      else if (e.key === 'ArrowLeft') swiper.slidePrev();
     });
   </script>
+
+  <!-- 플래시 메시지 팝업 -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <script>
+        alert("{{ messages[0] }}");
+      </script>
+    {% endif %}
+  {% endwith %}
 
 </body>
 </html>
