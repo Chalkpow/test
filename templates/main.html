@@ -10,15 +10,15 @@
 </head>
 <body class="bg-white h-screen flex flex-col justify-between items-center p-4">
 
-  <!-- 상단: 앱 이름 / 설정 -->
-  <div class="w-full flex justify-between items-center text-lg font-semibold">
-    <span>앱 이름</span>
-    <span>설정</span>
-  </div>
-
+  <!-- 상단: 앱 이름 / 설정 버튼 -->
+  <div class="w-full flex justify-between items-center text-lg font-semibold mb-4">
+    <span>괴산고 석식 도우미</span>
+    <button class="text-blue-600">설정</button>
+  </div>  
+  
   <!-- 중앙: 스와이프 화면 -->
   <div class="flex-1 w-full flex items-center justify-center">
-    <div class="swiper w-full h-full">
+    <div class="swiper w-full h-full" id="mainSwiper">
       <div class="swiper-wrapper">
         <!-- 빈 화면 1 -->
         <div class="swiper-slide flex items-center justify-center bg-gray-100 rounded-xl">
@@ -38,24 +38,32 @@
     </div>
   </div>
 
-  <!-- 하단 버튼 -->
-  <div class="w-full flex flex-col gap-4 mt-6">
-    <button class="bg-blue-600 text-white text-xl py-4 rounded-2xl w-full font-bold">
-      석식 인증
-    </button>
-    <button class="bg-green-600 text-white text-xl py-4 rounded-2xl w-full font-bold">
-      양도받기
-    </button>
-  </div>
+  <!-- 하단 버튼 (단일 버튼) -->
 
-  <!-- 스와이퍼 초기화 -->
+  <a href="/generate_qr" class="w-full mt-6">
+  <button class="bg-blue-600 text-white text-xl py-4 rounded-2xl w-full font-bold w-full">
+    석식 인증
+  </button>
+</a>
+
+
+  <!-- 스와이퍼 + 키보드 이벤트 초기화 -->
   <script>
-    new Swiper('.swiper', {
+    const swiper = new Swiper('#mainSwiper', {
       loop: false,
       pagination: {
         el: '.swiper-pagination',
         clickable: true,
       },
+    });
+
+    // ⌨️ 키보드 화살표로 슬라이드 넘기기
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        swiper.slideNext();
+      } else if (e.key === 'ArrowLeft') {
+        swiper.slidePrev();
+      }
     });
   </script>
 
