@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>관리자 대시보드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+  <div class="w-full max-w-4xl bg-white p-8 rounded-2xl shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-3xl font-bold text-gray-800">관리자 대시보드</h2>
+      <a href="{{ url_for('admin_logout') }}" class="text-red-600 hover:underline">로그아웃</a>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <span class="block sm:inline">{{ messages[0] }}</span>
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <h3 class="text-2xl font-semibold text-gray-700 mb-4">등록된 사용자</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+        <thead>
+          <tr class="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
+            <th class="py-3 px-6 text-left">ID</th>
+            <th class="py-3 px-6 text-left">아이디</th>
+            <th class="py-3 px-6 text-left">이름</th>
+            <th class="py-3 px-6 text-left">학년</th>
+            <th class="py-3 px-6 text-left">반</th>
+            <th class="py-3 px-6 text-left">번호</th>
+            <th class="py-3 px-6 text-center">작업</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-600 text-sm font-light">
+          {% for user in users %}
+          <tr class="border-b border-gray-200 hover:bg-gray-100">
+            <td class="py-3 px-6 text-left whitespace-nowrap">{{ user.id }}</td>
+            <td class="py-3 px-6 text-left">{{ user.userid }}</td>
+            <td class="py-3 px-6 text-left">{{ user.name }}</td>
+            <td class="py-3 px-6 text-left">{{ user.grade }}</td>
+            <td class="py-3 px-6 text-left">{{ user.class_ }}</td>
+            <td class="py-3 px-6 text-left">{{ user.number }}</td>
+            <td class="py-3 px-6 text-center">
+              <div class="flex item-center justify-center">
+                <a href="{{ url_for('edit_user', user_id=user.id) }}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </a>
+                <a href="{{ url_for('delete_user', user_id=user.id) }}" class="w-4 mr-2 transform hover:text-red-500 hover:scale-110" onclick="return confirm('정말로 이 사용자를 삭제하시겠습니까?');">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>     
