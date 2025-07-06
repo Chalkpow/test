@@ -10,13 +10,12 @@
 </head>
 <body class="bg-white h-screen flex flex-col justify-between items-center p-4">
 
-  <!-- 상단 -->
   <div class="w-full flex justify-between items-center text-lg font-semibold mb-4">
     <span>괴산고 석식 도우미</span>
 
     <div class="flex items-center space-x-4">
       {% if user %}
-        <span>{{ user.grade }}학년 {{ user.class }}반 {{ user.number }}번 {{ user.name }}</span>
+        <span>{{ user.grade }}학년 {{ user.class_ }}반 {{ user.number }}번 {{ user.name }}</span> {# user.class_로 변경 #}
         <a href="{{ url_for('logout') }}" class="text-red-600 hover:underline">로그아웃</a>
       {% else %}
         <a href="{{ url_for('login') }}" class="text-blue-600 hover:underline">로그인</a>
@@ -27,7 +26,6 @@
     </div>
   </div>
 
-  <!-- 중앙: 스와이프 화면 -->
   <div class="flex-1 w-full flex items-center justify-center">
     <div class="swiper w-full h-full" id="mainSwiper">
       <div class="swiper-wrapper">
@@ -45,14 +43,12 @@
     </div>
   </div>
 
-  <!-- 하단 버튼 -->
   <a href="/generate_qr" class="w-full mt-6">
     <button class="bg-blue-600 text-white text-xl py-4 rounded-2xl w-full font-bold">
       석식 인증
     </button>
   </a>
 
-  <!-- 스와이퍼 + 키보드 이벤트 초기화 -->
   <script>
     const swiper = new Swiper('#mainSwiper', {
       loop: false,
@@ -65,7 +61,6 @@
     });
   </script>
 
-  <!-- 플래시 메시지 팝업 -->
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       <script>
