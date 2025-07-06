@@ -4,10 +4,15 @@ import qrcode
 import datetime
 from io import BytesIO
 import base64
-from functools import wraps # wraps 임포트
+from functools import wraps  # wraps 임포트
+import calendar
+
+import requests
+from bs4 import BeautifulSoup
+import re
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key' # 세션 키 (실제 배포 시에는 더 강력한 키 사용)
+app.secret_key = 'your_secret_key'  # 세션 키 (실제 배포 시에는 더 강력한 키 사용)
 
 # SQLite 데이터베이스 설정 (로컬 개발용)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
@@ -45,13 +50,86 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# 급식 메뉴 파싱 함수
+def fetch_month_menu(year: int, month: int) -> dict:
+    """
+    주어진 연·월의 괴산고 급식 식단표를 가져와
+    {일: {'lunch': 중식메뉴, 'dinner': 석식메뉴}, ...} 형태로 반환.
+    """
+    ymd = f"{year}{month:02d}01"
+    url = f"https://school.cbe.go.kr/goesan-h/M01050701/list?ymd={ymd}"
+    resp = requests.get(url)
+    resp.raise_for_status()
+
+    soup = BeautifulSoup(resp.text, 'html.parser')
+    table = soup.find('table')
+
+    menu = {}
+    for td in table.find_all('td'):
+        text = td.get_text(separator=' ', strip=True)
+        m = re.search(r"(\d+)\s*중식(.*?)석식(.*)", text, re.S)
+        if not m:
+            continue
+        day, lunch, dinner = m.groups()
+        menu[int(day)] = {
+            'lunch': lunch.strip(),
+            'dinner': dinner.strip()
+        }
+    return menu
+
 @app.route('/')
 def main():
-    user_session_id = session.get('user_id')
+    # (1) 로그인된 사용자 조회
     user = None
-    if user_session_id:
-        user = User.query.get(user_session_id)
-    return render_template('main.html', user=user)
+    uid = session.get('user_id')
+    if uid:
+        user = User.query.get(uid)
+
+    # (2) 오늘 날짜·이번 달 메뉴 로딩
+    now = datetime.datetime.now()
+    year, month, today = now.year, now.month, now.day
+    try:
+        menu = fetch_month_menu(year, month)
+    except:
+        menu = {}
+        flash('식단 정보를 가져오는 중 오류가 발생했습니다.')
+
+    # (3) 오늘 메뉴가 없으면 -> 앞으로 (혹은 뒤로) 가장 가까운 날 찾기
+    if today in menu:
+        sel_day = today
+    else:
+        # 앞으로 우선 탐색
+        future = [d for d in sorted(menu) if d > today]
+        if future:
+            sel_day = future[0]
+        else:
+            # 뒤로
+            past = [d for d in sorted(menu) if d < today]
+            sel_day = past[-1] if past else None
+
+    sel_menu = menu.get(sel_day)
+
+    return render_template(
+        'index.html',
+        user=user,
+        year=year,
+        month=month,
+        sel_day=sel_day,
+        sel_menu=sel_menu,
+    )
+
+@app.template_filter('split_menu')
+def split_menu(menu_str: str) -> list:
+    """
+    1) \([^)]*\) 패턴으로 괄호 안 알러지 정보 제거
+    2) 남은 문자열을 공백 기준으로 split
+    3) 빈 문자열 제거 후 리스트 반환
+    """
+    # (1) 알러지 코드 제거
+    cleaned = re.sub(r'\([^)]*\)', '', menu_str)
+    # (2) 공백 기준으로 분리하고, 빈 항목 drop
+    parts = [p.strip() for p in cleaned.split() if p.strip()]
+    return parts
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -119,7 +197,6 @@ def generate_qr():
     return render_template('qr.html', qr_data=qr_data, img_data=img_b64)
 
 # --- 관리자 기능 추가 ---
-
 @app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -143,22 +220,20 @@ def admin_logout():
 @app.route('/admin')
 @admin_required
 def admin_dashboard():
-    users = User.query.all() # 모든 사용자 정보 조회
+    users = User.query.all()  # 모든 사용자 정보 조회
     return render_template('admin.html', users=users)
 
 @app.route('/admin/edit_user/<int:user_id>', methods=['GET', 'POST'])
 @admin_required
 def edit_user(user_id):
-    user = User.query.get_or_404(user_id) # 해당 ID의 사용자 조회, 없으면 404 에러
+    user = User.query.get_or_404(user_id)
 
     if request.method == 'POST':
-        # 사용자 정보 업데이트
         user.userid = request.form['userid']
         user.name = request.form['name']
         user.grade = f"{int(request.form['grade']):02d}"
         user.class_ = f"{int(request.form['class']):02d}"
         user.number = f"{int(request.form['number']):02d}"
-        # 비밀번호는 입력된 경우에만 업데이트
         if request.form['password']:
             user.password = request.form['password']
 
@@ -176,7 +251,6 @@ def delete_user(user_id):
     db.session.commit()
     flash(f'{user.name} 님의 계정이 삭제되었습니다.')
     return redirect(url_for('admin_dashboard'))
-
 
 if __name__ == '__main__':
     app.run(debug=True)
