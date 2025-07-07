@@ -15,9 +15,19 @@
     <span>괴산고 석식 도우미</span>
     <div class="flex items-center space-x-4">
       {% if user %}
-        <span>{{ user.grade }}학년 {{ user.class_ }}반 {{ user.number }}번 {{ user.name }}</span>
+        <div class="text-gray-700">
+          {{ user.grade }}학년 {{ user.class_ }}반 {{ user.number }}번 {{ user.name }}
+        </div>
+        <div class="text-sm text-gray-600">
+          {% if booking_month and booking_flag %}
+            {{ booking_month }}월 석식 신청 여부: {{ booking_flag }}
+          {% else %}
+            {{ month }}월 석식 신청 여부: -
+          {% endif %}
+        </div>
         <a href="{{ url_for('logout') }}" class="text-red-600 hover:underline">로그아웃</a>
       {% else %}
+        <div class="text-sm text-gray-600">석식 신청 여부: -</div>
         <a href="{{ url_for('login') }}" class="text-blue-600 hover:underline">로그인</a>
         <a href="{{ url_for('register') }}" class="text-blue-600 hover:underline">회원가입</a>
       {% endif %}

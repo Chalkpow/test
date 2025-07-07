@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>고유코드 관리</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+  <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+    {% with messages = get_flashed_messages() %}
+     {% if messages %}
+       <div class="mb-4 px-4 py-2 bg-blue-100 text-blue-800 rounded">
+         {{ messages[0] }}
+       </div>
+     {% endif %}
+   {% endwith %}
+
+   <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">등록된 고유코드</h2>
+      <a href="{{ url_for('upload_codes') }}" class="text-blue-600 hover:underline">새로 업로드</a>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+        <thead>
+            <tr class="bg-gray-200 text-gray-700 uppercase text-sm">
+            <th class="py-3 px-6">ID</th>
+            <th class="py-3 px-6">학년</th>
+            <th class="py-3 px-6">반</th>
+            <th class="py-3 px-6">번호</th>
+            <th class="py-3 px-6">이름</th>
+            <th class="py-3 px-6">코드</th>
+            <th class="py-3 px-6">{{ booking_label }}</th>  <!-- 동적 헤더 -->
+            <th class="py-3 px-6">작업</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-600 text-sm">
+            {% for c in codes %}
+            <tr class="border-b hover:bg-gray-100">
+            <td class="py-3 px-6">{{ c.id }}</td>
+            <td class="py-3 px-6">{{ c.grade or '-' }}</td>
+            <td class="py-3 px-6">{{ c.class_ or '-' }}</td>
+            <td class="py-3 px-6">{{ c.number or '-' }}</td>
+            <td class="py-3 px-6">{{ c.name or '-' }}</td>
+            <td class="py-3 px-6">{{ c.code }}</td>
+            <td class="py-3 px-6">{{ c.booking_flag or '-' }}</td>  <!-- 신청여부 -->
+            <td class="py-3 px-6">
+                <a href="{{ url_for('edit_code', code_id=c.id) }}" class="text-purple-600 mr-2">수정</a>
+                <a href="{{ url_for('delete_code', code_id=c.id) }}" class="text-red-600"
+                onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+            </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+
+    </div>
+
+    <p class="mt-4 text-center">
+      <a href="{{ url_for('admin_dashboard') }}" class="text-blue-600 hover:underline">대시보드로 돌아가기</a>
+    </p>
+  </div>
+
+</body>
+</html>

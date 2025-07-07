@@ -10,6 +10,7 @@
   <div class="w-full max-w-4xl bg-white p-8 rounded-2xl shadow-lg">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-3xl font-bold text-gray-800">관리자 대시보드</h2>
+      <a href="{{ url_for('view_codes') }}" class="text-blue-600 hover:underline">고유코드 관리</a>
       <a href="{{ url_for('admin_logout') }}" class="text-red-600 hover:underline">로그아웃</a>
     </div>
 
