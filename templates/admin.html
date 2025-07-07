@@ -11,6 +11,8 @@
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-3xl font-bold text-gray-800">관리자 대시보드</h2>
       <a href="{{ url_for('view_codes') }}" class="text-blue-600 hover:underline">고유코드 관리</a>
+      <a href="{{ url_for('meal_scan') }}" class="text-blue-600 hover:underline mr-4">QR 스캔</a>
+      <a href="{{ url_for('meal_records') }}" class="text-blue-600 hover:underline">당일 석식 현황</a>
       <a href="{{ url_for('admin_logout') }}" class="text-red-600 hover:underline">로그아웃</a>
     </div>
 

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <title>석식 인증 스캔</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    #result { font-size: 1.25rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h2>QR 코드 스캔 (관리자 전용)</h2>
+  <div id="reader" style="width:300px;"></div>
+  <div id="result">스캔 대기 중…</div>
+
+  <script>
+    function onScanSuccess(decodedText, decodedResult) {
+      fetch('{{ url_for("scan_qr") }}', {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: 'qr_data='+encodeURIComponent(decodedText)
+      })
+      .then(r=>r.json())
+      .then(j=>{
+        const el = document.getElementById('result');
+        el.textContent = j.message;
+        if (j.status==='OK')       el.style.color='green';
+        else if (j.status==='ALREADY') el.style.color='orange';
+        else                        el.style.color='red';
+      });
+    }
+    function onScanError(errorMessage) { /* 무시 */ }
+
+    const scanner = new Html5QrcodeScanner(
+      "reader", { fps: 10, qrbox: 250 });
+    scanner.render(onScanSuccess, onScanError);
+  </script>
+</body>
+</html>

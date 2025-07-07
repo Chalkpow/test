@@ -5,11 +5,11 @@ import datetime
 from io import BytesIO, TextIOWrapper
 import base64
 from functools import wraps  # wraps 임포트
-import calendar
 import io
 import csv
 from sqlalchemy import text
 import pandas as pd
+from datetime import date
 
 import requests
 from bs4 import BeautifulSoup
@@ -53,6 +53,14 @@ class UniqueCode(db.Model):
 
     def __repr__(self):
         return f'<UniqueCode {self.code}>'
+    
+class DailyMeal(db.Model):
+    id              = db.Column(db.Integer, primary_key=True)
+    unique_code_id  = db.Column(db.Integer, db.ForeignKey('unique_code.id'), nullable=False)
+    date            = db.Column(db.Date, nullable=False)
+    received        = db.Column(db.Boolean, default=False, nullable=False)
+
+    unique_code     = db.relationship('UniqueCode', backref='daily_meals')
 
 # 데이터베이스 생성 (처음 한 번만 실행)
 with app.app_context():
@@ -147,6 +155,58 @@ def upload_codes():
 
     return render_template('upload_codes.html')
 
+@app.route('/admin/meal_scan')
+@admin_required
+def meal_scan():
+    return render_template('meal_scan.html')
+
+@app.route('/admin/scan_qr', methods=['POST'])
+@admin_required
+def scan_qr():
+    qr = request.form['qr_data'].strip()
+    # 1) 오늘 날짜
+    today = date.today()
+    # 2) 오늘 기록이 한번도 초기화되지 않았다면—전일 데이터 지우고 오늘용 레코드 생성
+    if not DailyMeal.query.filter_by(date=today).first():
+        DailyMeal.query.delete()
+        db.session.commit()
+        for uc in UniqueCode.query.all():
+            db.session.add(DailyMeal(unique_code_id=uc.id, date=today, received=False))
+        db.session.commit()
+
+    # 3) QR 파싱: YYYYMMDD + grade(2) + class(2) + num(2)
+    dt_str, g, c, n = qr[:8], qr[8:10], qr[10:12], qr[12:14]
+    # (dt_str는 오늘이므로 따로 검증 생략)
+    uc = UniqueCode.query.filter_by(grade=g, class_=c, number=n).first()
+    if not uc or uc.booking_flag != 'O':
+        return {'status':'NOT_ELIGIBLE',
+                'message':'석식 대상자가 아닙니다.'}
+
+    # 4) DailyMeal 레코드 조회
+    rec = DailyMeal.query.filter_by(date=today, unique_code_id=uc.id).first()
+    if rec.received:
+        msg = f"{today.month}월 {today.day}일 {uc.name} 학생 이미 석식 받았습니다"
+        return {'status':'ALREADY', 'message':msg}
+    # 5) 최초 스캔
+    rec.received = True
+    db.session.commit()
+    msg = f"{today.month}월 {today.day}일 {uc.name} 학생 확인되었습니다"
+    return {'status':'OK', 'message':msg}
+
+
+
+@app.route('/admin/meal_records')
+@admin_required
+def meal_records():
+    today = date.today()
+    records = (DailyMeal.query
+                 .filter_by(date=today)
+                 .join(UniqueCode)
+                 .order_by(UniqueCode.grade, UniqueCode.class_, UniqueCode.number)
+                 .all())
+    return render_template('meal_records.html',
+                           records=records,
+                           month=today.month, day=today.day)
 
 
 @app.route('/admin/codes')
